@@ -1,0 +1,294 @@
+<DOCTYPE html>
+<html>
+<head>
+	<title>demo 1</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #000;/*black*/
+			color: #fff;/*white*/
+			margin: 0px;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	<script src="js/three.min.js"></script>
+	<script src="js/StereoEffect.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/DeviceOrientationControls.js"></script>
+	<script src="js/stats.min.js"></script>
+	<script src="js/ThreeMove.js"></script>
+	<script>
+		var scene, camera, renderer;//基本的三个对象-场景-相机-渲染器
+		var effect, controls, raycaster, stats;//分屏-控制器-光线追踪-帧率监控
+		var group, textDoc, meshClose;//文字mesh集合
+		var meshFresh, meshView, meshDoc, crosshair;//刷新-拍摄-信息-准星
+		var move;
+
+		init();
+		animate();
+
+		function init() {
+			//定义场景
+			scene = new THREE.Scene();
+
+			//添加相机
+			getCamera();
+			getCrosshair()
+
+			//设置渲染器
+			getRenderer();
+
+			//还要有光
+			getLight();
+
+			//要有地面
+			getFloor();
+
+			//交互操作
+			getObject();
+
+			//group
+			group = new THREE.Group();
+			group.position.set( 200, -20, 20 );
+			scene.add( group );
+
+			var word = "XX科技VR体验";
+			var pos = new THREE.Vector3( 00, 0, 20 );
+			getText(word, pos);
+
+			//这里分屏
+			effect = new THREE.StereoEffect( renderer );
+
+			//这里控制器
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+		    window.addEventListener('deviceorientation', setDeviceOrientationControls, true);
+
+		    //光线追踪
+		    raycaster = new THREE.Raycaster();
+
+		    //帧率监测
+		    getStats();
+
+		    //监听屏幕大小改变
+		    window.addEventListener( 'resize', onWindowSize, false );
+
+		    //监听键盘
+		    
+		    //移动控制
+		    var vec3 = new THREE.Vector3( 0, 0, -1 );
+		    move = new THREE.ThreeMove( scene, camera, controls, vec3 );
+		    move.init();
+		}
+
+		function animate() {
+			requestAnimationFrame( animate );
+			render();
+			stats.update();
+		}
+
+		function render() {
+			raycaster.setFromCamera( {x: 0, y: 0}, camera );
+
+			//交互对象旋转 显示信息和关闭的对象
+			if( meshDoc !== undefined ) {
+				var intersectDoc = raycaster.intersectObject( meshDoc );
+				if ( intersectDoc.length > 0 ) {
+					meshDoc.rotation.y += 0.01;
+					meshDoc.countFlag++;//相交时，每一帧标志属性自增1
+					if ( meshDoc.countFlag > 12000 ) {
+						meshDoc.countFlag = 121;//防溢出
+					};
+					if ( meshDoc.countFlag > 120 && !group.textDoc ) {
+						group.add( textDoc );
+						group.add( meshClose );
+					};
+				} else {
+					meshDoc.countFlag = 0;
+				}
+			}
+			//移除显示信息
+			if ( meshClose !== undefined) {
+				var intersectClose = raycaster.intersectObject( meshClose );
+				if ( intersectClose.length > 0 ) {
+					meshClose.rotation.y += 0.01;
+					meshClose.countFlag++;
+
+					if ( meshClose.countFlag > 120 ) {
+						group.remove( meshClose );
+						group.remove( textDoc );
+					};
+				} else {
+					meshClose.countFlag = 0;
+				}
+			};
+
+			move.update();
+			
+			controls.update();
+			effect.render( scene, camera );
+		}
+
+		function onWindowSize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			effect.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function getStats() {
+			stats = new Stats();
+		    stats.domElement.style.position = 'absolute';
+		    stats.domElement.style.top = '0px';
+		    stats.domElement.style.left = '0px';
+		    document.getElementsByTagName( 'body' )[0].appendChild( stats.domElement );
+		}
+
+		function getCamera() {
+			camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+			camera.position.set( 40, 10, 100);
+			scene.add( camera );
+		}
+
+		function getRenderer() {
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor( 0x000000 );
+			document.getElementsByTagName('body')[0].appendChild(renderer.domElement); 
+		}
+
+		function getLight() {
+			var ambientLight = new THREE.AmbientLight( 0xffffff );
+			scene.add( ambientLight );
+		}
+
+		function getObject() {
+			var geometry = new THREE.CubeGeometry(20, 20, 20);
+			var circleGeometry = new THREE.CircleGeometry( 30, 100 );
+			var loader = new THREE.TextureLoader();
+			loader.load('img/fresh.png',
+		        		function(texture) {
+		        			var material = new THREE.MeshPhongMaterial({
+						      map: texture
+						    });
+						    meshView = new THREE.Mesh( geometry, material );
+						    meshView.position.set(200, 50, 20);
+					        scene.add( meshView );
+		        		})
+			loader.load('img/view.png',
+		        		function(texture) {
+		        			var material = new THREE.MeshPhongMaterial({
+						      map: texture
+						    });
+						    meshView = new THREE.Mesh( geometry, material );
+						    meshView.position.set(200, 10, 20);
+					        scene.add( meshView );
+		        		})
+			loader.load('img/doc.png',
+		        		function(texture) {
+		        			var material = new THREE.MeshPhongMaterial({
+						      map: texture
+						    });
+						    meshDoc = new THREE.Mesh( geometry, material );
+						    meshDoc.countFlag = 0;
+						    meshDoc.position.set(200, -20, 20);
+					        scene.add( meshDoc );
+		        		});
+			loader.load('img/close.png',
+		        		function(texture) {
+		        			var material = new THREE.MeshPhongMaterial({
+						      map: texture
+						    });
+						    meshClose = new THREE.Mesh( geometry, material );
+						    meshClose.countFlag = 0;
+						    meshClose.name = 'introduce';
+						    meshClose.position.set( -20, 0, -20);
+
+		        		});
+		    
+		}
+
+		function getText(word, pos) {
+			//设置默认文本
+			word = word ? word : "Hello World";
+			pos = pos ? pos : new THREE.Vector3( 0, 0, 0);
+			var loader = new THREE.FontLoader();
+			loader.load( 'js/fonts/KaiTi_Regular.js', 
+				function( texture ){
+					var textGeometry = new THREE.TextGeometry( word, {
+						font: texture,
+						size: 10,
+						height: 2
+					} );
+					var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+					textDoc = new THREE.Mesh( textGeometry, material );
+					textDoc.position.set( pos.x, pos.y, pos.z );
+					textDoc.rotation.y = - 90 * Math.PI / 180;
+				} );
+
+		}
+
+		function getFloor() {
+			var geometry, material, i, lineX, lineY, lineZ;
+			//建立一个包含两个点的几何体
+			geometry = new THREE.Geometry();
+			geometry.vertices.push( new THREE.Vector3( -500, 0, 0 ) );
+			geometry.vertices.push( new THREE.Vector3( +500, 0, 0 ) );
+			//设置一个基本线的材质
+			material = new THREE.LineBasicMaterial( {color: 0xa69292, opacity: 0.2} );
+			//画线floor	
+			for( i = 0; i <= 20; i++) {
+				if ( i != 10) {
+					//画两条条在X轴上的线
+					lineX = new THREE.Line( geometry, material );//与X轴平行
+					lineZ = new THREE.Line( geometry, material );//与Z轴平行
+				} else {
+					var materialX = new THREE.LineBasicMaterial( {color: 0xff0000, opacity: 0.2} );
+					var materialY = new THREE.LineBasicMaterial( {color: 0x00ff00, opacity: 0.2} );
+					var materialZ = new THREE.LineBasicMaterial( {color: 0x0000ff, opacity: 0.2} );
+					lineX = new THREE.Line( geometry, materialX );//与X轴平行
+					lineY = new THREE.Line( geometry, materialY );//与Y轴平行
+					lineZ = new THREE.Line( geometry, materialZ );//与Z轴平行
+					lineY.rotation.z = 90 * Math.PI / 180;
+					scene.add( lineY );
+				}
+				
+				//一条平移到预定的位置与X轴平行
+				lineX.position.z = (i * 50) - 500;
+				//另一条先旋转90°与Z轴平行
+				lineZ.rotation.y = 90 * Math.PI / 180 ;
+				lineZ.position.x = (i * 50) - 500;
+				//分别把两条线添加到场景
+				scene.add( lineX );
+				scene.add( lineZ );
+			}
+		}
+
+		function setDeviceOrientationControls(event) {
+	        //有vr设备,用相机初始化这个vr控制器
+	        controls = new THREE.DeviceOrientationControls(camera, true);
+	        controls.connect();
+	        controls.update();
+	        //取消设备判断
+	        window.removeEventListener('deviceorientation', setDeviceOrientationControls, true);
+      	}
+
+      	function getCrosshair() {
+      		crosshair = new THREE.Mesh(
+					new THREE.RingGeometry( 0.02, 0.04, 32 ),
+					new THREE.MeshBasicMaterial( {
+						color: 0xffffff,
+						opacity: 0.5,
+						transparent: true
+					} )
+				);
+			crosshair.position.z = - 2;
+			camera.add( crosshair ); 
+      	}
+
+	</script>
+</body>
+</html>
