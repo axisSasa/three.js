@@ -1,0 +1,67 @@
+body,
+p,
+h1,
+h2,
+h3,
+div,
+section,
+article,
+img,
+ul,
+li,
+dd,
+dt,
+dl,
+hr,
+figure,
+figcaption,
+blockquote,
+iframe {
+	padding: 0;
+	margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+html {
+	height: 100%;
+}
+body {
+    background-color: #ffffff;
+    margin: 0px;
+    height: 100%;
+    color: #555;
+    font-family: 'inconsolata';
+    font-size: 15px;
+    line-height: 18px;
+    overflow: hidden;
+}
+h2 {
+	font-size: 14px;
+	padding: 20px 0 10px 5px;
+}
+.leftNav {
+    position: fixed;
+    left: 0px;
+    width: 210px;
+    height: 100%;
+    overflow: auto;
+    background: #fafafa;
+}
+
+.leftNav a {
+	color: #2194CE;
+	text-decoration: none;
+	padding: 0 0 5px 5px;
+    display: block;
+}
+
+#viewer {
+    position: absolute;
+    border: 0px;
+    left: 210px;
+    width: calc(100% - 210px);
+    height: 100%;
+    overflow: auto;
+}
