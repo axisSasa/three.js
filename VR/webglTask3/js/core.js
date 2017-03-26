@@ -24,7 +24,7 @@ function init() {
 	var loader = new THREE.TextureLoader();
 
 	//地面纹理
-	var textureFloor = loader.load('./img/floor.jpg', function(){	
+	var textureFloor = loader.load('./../img/floor.jpg', function(){	
 		console.log('加载完了')
 	} );
 	textureFloor.magFilter = THREE.LinearFilter;
@@ -36,7 +36,7 @@ function init() {
 		materialCar;
 	for (var i = 6; i > 0; i--) {
 		//导入图片作为纹理
-		textureCar = loader.load('./img/girl' + i + '.png',function() {});
+		textureCar = loader.load('./../img/girl' + i + '.png',function() {});
 		textureCar.magFilter = THREE.LinearFilter;
 		textureCar.minFilter = THREE.LinearFilter;
 		//通过纹理设置材质
@@ -53,7 +53,7 @@ function init() {
 	cube.castShadow = true;
 
 	//轮胎纹理
-	var textureWheel = loader.load('./img/wheel.png');
+	var textureWheel = loader.load('./../img/wheel.png');
 	textureWheel.magFilter = THREE.LinearFilter;
 	textureWheel.minFilter = THREE.LinearFilter;	
 	//小车轮胎
