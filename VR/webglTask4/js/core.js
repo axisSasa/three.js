@@ -34,6 +34,17 @@ function init() {
 	} );
 	textureFloor.magFilter = THREE.LinearFilter;
 	textureFloor.minFilter = THREE.LinearFilter;
+	//地面
+	var geometry = new THREE.PlaneGeometry( 15, 15 );
+	var material = new THREE.MeshPhongMaterial( {
+		map: textureFloor,
+		overdraw: true
+	} );
+	var plane = new THREE.Mesh( geometry, material );
+	scene.add( plane );	
+	plane.rotation.x -= Math.PI / 2;
+	plane.position.y = -1.7;
+	plane.receiveShadow = true;
 
 	//小车纹理
 	var materials = [],
@@ -81,19 +92,6 @@ function init() {
 	torus2.castShadow = true;
 	torus3.castShadow = true;
 	torus4.castShadow = true;
-
-
-	//地平面
-	var geometry = new THREE.PlaneGeometry( 15, 15 );
-	var material = new THREE.MeshPhongMaterial( {
-		map: textureFloor,
-		overdraw: true
-	} );
-	var plane = new THREE.Mesh( geometry, material );
-	scene.add( plane );	
-	plane.rotation.x -= Math.PI / 2;
-	plane.position.y = -1.6;
-	plane.receiveShadow = true;
 
 	//坐标系 
 	var axisHelper = new THREE.AxisHelper( 5 );
