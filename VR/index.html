@@ -4,17 +4,41 @@
 	<meta charset="utf-8">
 	<title>ECharts & WebVR 学院</title>
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
 <body>
 
 	<nav class="leftNav">
 		<h2>ECharts & WebVR 学院</h2>
-		<a href="demo.html" target="viewer">demo</a>
-		<a href="webglTask1/index.html" target="viewer">WebGL No.1 - Three.js 入门</a>
-		<a href="webglTask2/index.html" target="viewer">WebGL No. 2 - 光与影</a>
-		<a href="webglTask3/index.html" target="viewer">WebGL No. 3 - 材质与纹理</a>
-		<a href="webglTask4/index.html" target="viewer">WebGL No. 4 - 照相机和交互控制</a>
+		<a class="link" href="demo.html" target="viewer">demo</a>
+		<a class="link" href="webglTask1/index.html" target="viewer">WebGL No.1 - Three.js 入门</a>
+		<a class="link" href="webglTask2/index.html" target="viewer">WebGL No. 2 - 光与影</a>
+		<a class="link" href="webglTask3/index.html" target="viewer">WebGL No. 3 - 材质与纹理</a>
+		<a class="link" href="webglTask4/index.html" target="viewer">WebGL No. 4 - 照相机和交互控制</a>
+		<a class="link" href="webglTask5/index.html" target="viewer">WebGL No.5 - 动画</a>
+		<a href="webglTask6/index.html" target="viewer">WebGL No.6 - 外部模型</a>
+		<a href="webglTask7/index.html" target="viewer">WebGL No.7 - 着色器</a>
+		<a href="webglTask8/index.html" target="viewer">WebGL No.8 - 物理引擎</a>
+		<a href="webglTask9/index.html" target="viewer">WebGL No.9 - WebVR</a>
+		<a href="webglTask10/index.html" target="viewer">WebGL No.10 -【综合】追风年代：第一人称三维赛车游戏</a>
 	</nav>
 	<iframe id="viewer"  name="viewer"></iframe>
+	<script type="text/javascript">
+		document.querySelector('.leftNav').addEventListener('click', handleClick, false);
+		var viewer = document.getElementById('viewer');
+		function handleClick(ev) {
+			if(ev.target.className.indexOf('link') != -1){
+				var location = window.location;
+				location.hash = ev.target.getAttribute('href').split('/')[0];
+				window.history.replaceState( {} , '', location.pathname + location.hash );
+				viewer.src = location.hash + '/index.html';
+				viewer.focus();
+			}
+		}
+		if ( window.location.hash !== '' ) {
+			document.getElementById('viewer').src = window.location.hash.substring( 1 ) + '/index.html';
+			viewer.focus();
+		}
+	</script>
 </body>
 </html>
