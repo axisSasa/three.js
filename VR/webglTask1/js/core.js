@@ -44,6 +44,9 @@ function init() {
 	var axisHelper = new THREE.AxisHelper( 5 );
 	scene.add( axisHelper );
 
+	//窗口大小改变
+	window.addEventListener( 'resize', onWindowResize, false );
+
 }
 
 function animate() {
@@ -85,4 +88,11 @@ function getTorus() {
 		color: 0xffffff,
 		specular: 0xeeeeee
 	}) );	
+}
+
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	renderer.setSize( window.innerWidth, window.innerHeight );
 }

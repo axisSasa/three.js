@@ -72,30 +72,26 @@ function init() {
 	var textureWheel = loader.load('./../img/wheel.png', render);
 	textureWheel.magFilter = THREE.LinearFilter;
 	textureWheel.minFilter = THREE.LinearFilter;	
+	
 	//小车轮胎
-	var torus1 = getTorus(textureWheel),
-		torus2 = getTorus(textureWheel),
-		torus3 = getTorus(textureWheel),
-		torus4 = getTorus(textureWheel);
+	var torus = [];
+	for (var i = 0; i < 4; i++) {
+		torus.push(getTorus(textureWheel));
+		container.add(torus[i]);
+		torus[i].castShadow = true;
+	}
 
-	torus1.position.set(2, -1, 1.5);
-	torus2.position.set(-2, -1, 1.5);
-	torus3.position.set(2, -1, -1.5);
-	torus4.position.set(-2, -1, -1.5);
-
-	container.add(torus1);
-	container.add(torus2);
-	container.add(torus3);
-	container.add(torus4);
-
-	torus1.castShadow = true;
-	torus2.castShadow = true;
-	torus3.castShadow = true;
-	torus4.castShadow = true;
+	torus[0].position.set(2, -1, 1.5);
+	torus[1].position.set(-2, -1, 1.5);
+	torus[2].position.set(2, -1, -1.5);
+	torus[3].position.set(-2, -1, -1.5);
 
 	//坐标系 
 	var axisHelper = new THREE.AxisHelper( 5 );
 	scene.add( axisHelper );
+	
+	//窗口大小改变
+	window.addEventListener( 'resize', onWindowResize, false );
 }
 
 function animate() {
@@ -151,4 +147,11 @@ function getTorus(texture) {
 		map: texture,
 		overdraw: true
 	}) );	
+}
+
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	renderer.setSize( window.innerWidth, window.innerHeight );
 }
