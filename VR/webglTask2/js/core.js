@@ -57,7 +57,7 @@ function init() {
 	var plane = new THREE.Mesh( geometry, material );
 	scene.add( plane );	
 	plane.rotation.x += Math.PI / 2;
-	plane.position.y = -1.6;
+	plane.position.y = -1.7;
 	plane.receiveShadow = true;
 
 	//坐标系 
